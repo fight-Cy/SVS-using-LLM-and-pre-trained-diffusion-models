@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<!-- saved from url=(0033)https://leiyi420.github.io/HierarchicalEmoTTS/ -->
+<html lang="en-US">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+
+  <!-- Begin Jekyll SEO tag v2.7.1 -->
+  <title>Singing Voice Synthesis Using Large Language Models and Pre-trained Diffusion Models</title>
+  <meta name="generator" content="Jekyll v3.9.0">
+  <meta property="og:title" content="TODO: title">
+  <meta property="og:locale" content="en_US">
+  <!-- <link rel="canonical" href="https://xqfeng-josie.github.io/stress">
+  <meta property="og:url" content="https://xqfeng-josie.github.io/stress/"> -->
+  <meta name="twitter:card" content="summary">
+  <!-- End Jekyll SEO tag -->
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#157878">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body data-new-gr-c-s-check-loaded="14.1001.0" data-gr-ext-installed="">
+  <section class="page-header">
+    <!-- <h1 class="project-name">Demo PAGE</h1> -->
+    <!-- <h2 class="project-tagline"></h2> -->
+
+
+  </section>
+
+  <section class="main-content">
+    <h1 id="">
+      <center>Singing Voice Synthesis Using Large Language Models and Pre-trained Diffusion Models</center>
+    </h1>
+
+    <!-- <center><i>Anonymous submission to INTERSPEECH 2023</i></center> -->
+
+    <h2 id="abstract">1. Abstract<a name="abstract"></a></h2>
+    <p>Singing voice synthesis (SVS) aims to generate corresponding audio based on lyrics and music notes,
+       which has attracted increasing attention in recent years. When synthesizing target singing, 
+       it is more user-friendly to add controls via natural language prompts to achieve desired effects. 
+       Previous methods usually require constructing a large corpus of singing data with corresponding prompts for training. 
+       However, besides the training cost, the synthesized results are constrained by the prompt generation pipeline. 
+       In contrast, we propose a training-free pipeline that controls outputs of the SVS model based on text prompts.
+        Specifically, we utilize large language models (LLMs) for prompt analysis to obtain the target attributes of singing voices.
+         Then we employ a pre-trained diffusion-based SVS model to perform audio synthesis based on the analyzed attributes. 
+         This approach leverages the powerful comprehension capabilities of LLMs and avoids the need for retraining during the audio generation process. 
+         Our experimental results demonstrate that our method can generate singing voices consistent with the text prompts.
+    </p>
+    <!-- <center><img src='fig/training_process.png' width="40%" hspace="20"><img src='fig/inference_process.png' width="40%" hspace="20"></center> -->
+    <!-- <br><br> -->
+    <!-- <br><br> -->
+    <h2>2. Multi-Attribute Control<a name="Multi-Attribute Control"></a></h2>
+    <p>In this section, we provide samples of prompted control over multiple attributes.</p>
+    <p>We provide 12 sets of samples for prompted control, 
+      with 2 label options for gender -- male and female, 2 label options for pitch -- high and low, 
+      and 3 label options for volume -- high, medium, and low, 
+      resulting in 2 &times; 2 &times; 3 = 12 audio sample presentations.</p>
+    <!-- <p><b>Ablation</b>: We aim to verify the influence of the style embedding and speaker embedding added to different modules as conditions.</p>
+    <p><b>Style Control by Text Prompt</b>: We aim to show that PromptStyle can control transfered style with different natural language descriptions.</p> -->
+    <!-- <h3>2.1 Performance on the Style Transfer</h3> -->
+    <!-- <table>
+      <thead>
+        <tr>
+          <th style="text-align: center"><strong>reference speech</strong></th>
+          <th style="text-align: center"><strong>target speaker</strong></th>
+          <th style="text-align: center"><strong>CST-TTS</strong></th>
+          <th style="text-align: center"><strong>GST-MLTTS</strong></th>
+          <th style="text-align: center"><strong>PromptStyle</strong></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="text-align: left"><audio style="width: 250px;" src="samples/exp1/ref_speech/lyrical.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio style="width: 250px;" src="samples/exp1/target_speech/audio_book_1.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio style="width: 250px;" src="samples/exp1/cst-tts/抒情_1-7_yy_1_31.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio style="width: 250px;" src="samples/exp1/gst-mltts/抒情_1-7_yy_1_31.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio style="width: 250px;" src="samples/exp1/promptstyle/抒情_1-7_yy_1_31.gen.wav" controls="" preload=""></audio></td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio style="width: 250px;" src="samples/exp1/ref_speech/warmful.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio style="width: 250px;" src="samples/exp1/target_speech/audio_book_1.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio style="width: 250px;" src="samples/exp1/cst-tts/温柔_1-7_yy_1_29.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio style="width: 250px;" src="samples/exp1/gst-mltts/温柔_1-7_yy_1_29.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio style="width: 250px;" src="samples/exp1/promptstyle/温柔_1-7_yy_1_29.gen.wav" controls="" preload=""></audio></td>
+        </tr>
+        <tr>
+          <td style="text-align: left"><audio style="width: 250px;" src="samples/exp1/ref_speech/passion.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio style="width: 250px;" src="samples/exp1/target_speech/audio_book_1.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio style="width: 250px;" src="samples/exp1/cst-tts/青春_01_引子_穿越的唐家三少_10_1.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio style="width: 250px;" src="samples/exp1/gst-mltts/青春_01_引子_穿越的唐家三少_10_1.wav" controls="" preload=""></audio></td>
+          <td style="text-align: left"><audio style="width: 250px;" src="samples/exp1/promptstyle/青春_01_引子_穿越的唐家三少_10_1.gen.wav" controls="" preload=""></audio></td>
+        </tr>
+      </tbody>
+    </table>
+    <br> -->
+
+
+    <!-- <h3>2.3 Style Control by Text Prompt</h3> -->
+    <table>
+      <col width="15%">
+      <thead>
+        <tr>
+          <th style="text-align: center"><strong>Labels</strong></th>
+          <th style="text-align: center"><strong>Prompt</strong></th>
+          <th style="text-align: center"><strong>reference Singing</strong></th>
+          <th style="text-align: center"><strong>Diffsinger</strong></th>
+          <th style="text-align: center"><strong>Proposed</strong></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="text-align: center"><p>Female, High Volume, High Pitch</p></td>
+          <td style="text-align: center"><p>Generatinging a song with a <b>lass vocalist</b> possessing a <b>loud voice</b> and a <b>whistling sound</b></p></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/female-high-(pitch)high/groundtruth_童话0028.wav" controls="" preload=""></audio></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/female-high-(pitch)high/diffsinger_童话0028.wav" controls="" preload=""></audio></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/female-high-(pitch)high/proposed_童话0028.wav" controls="" preload=""></audio></td>
+        </tr>
+        <tr>
+          <td style="text-align: center"><p>Female, High Volume, Low Pitch</p></td>
+          <td style="text-align: center"><p>Creating a <b>low-pitched pitch</b> song by a <b>miss singer</b> with a <b>roaring voice</b></p></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/female-high-(pitch)low/ground_岁月神偷0007.wav" controls="" preload=""></audio></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/female-high-(pitch)low/diffsinger_岁月神偷0007.wav" controls="" preload=""></audio></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/female-high-(pitch)low/proposed_岁月神偷0007.wav" controls="" preload=""></audio></td>
+        </tr>
+        
+        <tr>
+          <td style="text-align: center"><p>Female, Low Volume, High Pitch</p></td>
+          <td style="text-align: center"><p>Composing a <b>girl singer's</b> song with a <b>slight voice</b> and <b>sharp pitch</b></p></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/female-low-(pitch)high/groundtruth_奇妙能力歌0004.wav" controls="" preload=""></audio></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/female-low-(pitch)high/diffsinger_神奇能力歌0004.wav" controls="" preload=""></audio></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/female-low-(pitch)high/proposed_奇妙能力歌0004.wav" controls="" preload=""></audio></td>
+        </tr>
+        <tr>
+          <td style="text-align: center"><p>Female, Low Volume, Low Pitch</p></td>
+          <td style="text-align: center"><p>Synthesizing a <b>female singer's</b> <b>quiet voice</b> and <b>low pitch song</b></p></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/female-low-(pitch)low/groundtruth_奇妙能力歌0019.wav" controls="" preload=""></audio></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/female-low-(pitch)low/diffsinger_奇妙能力歌0019.wav" controls="" preload=""></audio></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/female-low-(pitch)low/proposed_奇妙能力歌0019.wav" controls="" preload=""></audio></td>
+        </tr>
+        <tr>
+          <td style="text-align: center"><p>Female, Medium Volume, High Pitch</p></td>
+          <td style="text-align: center"><p>Composing a <b>miss singer's</b> song with a <b>average voice</b> and <b>shrill pitch</b></p></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/female-mid-(pitch)high/groundtruth_一荤一素0001.wav" controls="" preload=""></audio></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/female-mid-(pitch)high/diffsinger_一荤一素0001.wav" controls="" preload=""></audio></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/female-mid-(pitch)high/proposed_一荤一素0001.wav" controls="" preload=""></audio></td>
+        </tr>
+        <tr>
+          <td style="text-align: center"><p>Female, Medium Volume, Low Pitch</p></td>
+          <td style="text-align: center"><p>Compose a song with a <b>deep pitch</b> and <b>female artist</b> featuring a <b>moderate vocal</b> style</p></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/female-mid-(pitch)low/groundtruth_问春0000.wav" controls="" preload=""></audio></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/female-mid-(pitch)low/diffsinger_问春0000.wav" controls="" preload=""></audio></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/female-mid-(pitch)low/proposed_问春0000.wav" controls="" preload=""></audio></td>
+        </tr>
+        <tr>
+          <td style="text-align: center"><p>Male, High Volume, High Pitch</p></td>
+          <td style="text-align: center"><p>Composing a <b>guy singer's</b> song with a <b>loud voice</b> and a <b>treble pitch</b></p></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/male-high-(pitch)high/groundtruth_岁月神偷0003.wav" controls="" preload=""></audio></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/male-high-(pitch)high/diffsinger_岁月神偷0003.wav" controls="" preload=""></audio></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/male-high-(pitch)high/proposed_岁月神偷0003.wav" controls="" preload=""></audio></td>
+        </tr>
+        <tr>
+          <td style="text-align: center"><p>Male, High Volume, Low Pitch</p></td>
+          <td style="text-align: center"><p>Can you compose a <b>bass melody</b> with a <b>loud voice</b> and a <b>male lead singer?</b></p></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/male-high-(pitch)low/groundtruth_一千年以后0015.wav" controls="" preload=""></audio></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/male-high-(pitch)low/diffsinger_一千年以后0015.wav" controls="" preload=""></audio></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/male-high-(pitch)low/proposed_一千年以后0015.wav" controls="" preload=""></audio></td>
+        </tr>
+        <tr>
+          <td style="text-align: center"><p>Male, Low Volume, High Pitch</p></td>
+          <td style="text-align: center"><p>Composing a <b>whistling pitch</b> song with a <b>hushed volume</b> and <b>boy vocalist</b></p></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/male-low-(pitch)high/groundtruth_一千年以后0000.wav" controls="" preload=""></audio></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/male-low-(pitch)high/diffsinger_一千年以后0000.wav" controls="" preload=""></audio></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/male-low-(pitch)high/proposed_一千年以后0000.wav" controls="" preload=""></audio></td>
+        </tr>
+        <tr>
+          <td style="text-align: center"><p>Male, Low Volume, Low Pitch</p></td>
+          <td style="text-align: center"><p>Design a <b>man vocalist's</b> song with a <b>twittering voice</b> and a <b>low-pitched pitch</b></p></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/male-low-(pitch)low/groundtruth_一荤一素0006.wav" controls="" preload=""></audio></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/male-low-(pitch)low/diffsinger_一荤一素0006.wav" controls="" preload=""></audio></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/male-low-(pitch)low/proposed_一荤一素0006.wav" controls="" preload=""></audio></td>
+        </tr>
+        <tr>
+          <td style="text-align: center"><p>Male, Medium Volume, High Pitch</p></td>
+          <td style="text-align: center"><p>Compose a <b>man vocalist</b> with impeccable <b>whistling control</b> and <b>intermediate voice</b> for song synthesizeing</p></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/male-mid-(pitch)high/groundtruth_消愁0028.wav" controls="" preload=""></audio></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/male-mid-(pitch)high/diffsinger_消愁0028.wav" controls="" preload=""></audio></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/male-mid-(pitch)high/proposed_消愁0028.wav" controls="" preload=""></audio></td>
+        </tr>
+        <tr>
+          <td style="text-align: center"><p>Male, Medium Volume, Low Pitch</p></td>
+          <td style="text-align: center"><p>Synthesize a <b>low-pitched pitch</b> song sung by a <b>intermediate boy</b> vocalist</p></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/male-mid-(pitch)low/groundtruth_念奴娇赤壁怀古0010.wav" controls="" preload=""></audio></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/male-mid-(pitch)low/diffsinger_念奴娇赤壁怀古0010.wav" controls="" preload=""></audio></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/multi-attribute/male-mid-(pitch)low/proposed_念奴娇赤壁怀古0010.wav" controls="" preload=""></audio></td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <br>
+    
+ <h2>3. The Influence of Changing Different attributes<a name="Changing attributes"></a></h2>
+    <p>In this section, we provide samples of changing different attributes. Despite diffsinger model, we set two other baselines for comparisons. As we
+      have three attribute phrased from the prompts, we set one
+      or two attributes controlled for different baselines. </p>
+      <p><b>The first
+      baseline</b> is to <b>control the gender only</b> and without vocal range
+      consideration. </p>
+      <p><b>The second baseline</b> is to <b>control the gender
+      and pitch</b> simultaneously.</p>
+      <table>
+        <col width="12%">
+        <thead>
+          <tr>
+            <th style="text-align: center"><strong>Labels</strong></th>
+            <th style="text-align: center"><strong>Prompt</strong></th>
+            <th style="text-align: center"><strong>reference Singing</strong></th>
+            <th style="text-align: center"><strong>Diffsinger</strong></th>
+            <th style="text-align: center"><strong>Baseline1-Gender Only</strong></th>
+            <th style="text-align: center"><strong>Baseline2-Gender And Pitch</strong></th>
+            <th style="text-align: center"><strong>Proposed</strong></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="text-align: center"><p>Female, High Volume, High Pitch</p></td>
+            <td style="text-align: center"><p>Compose a <b>lass vocalist</b> with a <b>thunderous voice</b> and <b>whistling pitch</b> for a song composition</p></td>
+            <td style="text-align: center"><audio style="width: 170px;" src="audio/change-attribute/female-high-(pitch)high/groundtruth_一荤一素0038.wav" controls="" preload=""></audio></td>
+            <td style="text-align: center"><audio style="width: 170px;" src="audio/change-attribute/female-high-(pitch)high/diffsinger_一荤一素0038.wav" controls="" preload=""></audio></td>
+            <td style="text-align: center"><audio style="width: 170px;" src="audio/change-attribute/female-high-(pitch)high/gender_一荤一素0038.wav" controls="" preload=""></audio></td>
+            <td style="text-align: center"><audio style="width: 170px;" src="audio/change-attribute/female-high-(pitch)high/gender_and_pitch_一荤一素0038.wav" controls="" preload=""></audio></td>
+            <td style="text-align: center"><audio style="width: 170px;" src="audio/change-attribute/female-high-(pitch)high/proposed_一荤一素0038.wav" controls="" preload=""></audio></td>
+          </tr>
+          <tr>
+            <td style="text-align: center"><p>Female, High Volume, Low Pitch</p></td>
+            <td style="text-align: center"><p>Can you create a song with a <b>thunderous voice</b>, and if possible, a <b>lass voice</b>, that has a distinctive <b>deep sound?</p></td>
+            <td style="text-align: center"><audio style="width: 170px;" src="audio/change-attribute/female-high-(pitch)low/groundtruth_消愁0017.wav" controls="" preload=""></audio></td>
+            <td style="text-align: center"><audio style="width: 170px;" src="audio/change-attribute/female-high-(pitch)low/diffsinger_消愁0017.wav" controls="" preload=""></audio></td>
+            <td style="text-align: center"><audio style="width: 170px;" src="audio/change-attribute/female-high-(pitch)low/gender_only_消愁0017.wav" controls="" preload=""></audio></td>
+            <td style="text-align: center"><audio style="width: 170px;" src="audio/change-attribute/female-high-(pitch)low/gender_and_pitch_消愁0017.wav" controls="" preload=""></audio></td>
+            <td style="text-align: center"><audio style="width: 170px;" src="audio/change-attribute/female-high-(pitch)low/proposed_消愁0017.wav" controls="" preload=""></audio></td>
+          </tr>
+          <tr>
+            <td style="text-align: center"><p>Male, High Volume, High Pitch</p></td>
+            <td style="text-align: center"><p>Composing a <b>guy singer's</b> song with a <b>loud voice</b> and a <b>treble pitch</p></td>
+            <td style="text-align: center"><audio style="width: 170px;" src="audio/change-attribute/male-high-(pitch)high/groundtruth_岁月神偷0003.wav" controls="" preload=""></audio></td>
+            <td style="text-align: center"><audio style="width: 170px;" src="audio/change-attribute/male-high-(pitch)high/diffsinger_岁月神偷0003.wav" controls="" preload=""></audio></td>
+            <td style="text-align: center"><audio style="width: 170px;" src="audio/change-attribute/male-high-(pitch)high/gender_only_岁月神偷0003.wav" controls="" preload=""></audio></td>
+            <td style="text-align: center"><audio style="width: 170px;" src="audio/change-attribute/male-high-(pitch)high/gender_and_pitch_岁月神偷0003.wav" controls="" preload=""></audio></td>
+            <td style="text-align: center"><audio style="width: 170px;" src="audio/change-attribute/male-high-(pitch)high/proposed_岁月神偷0003.wav" controls="" preload=""></audio></td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+
+      <h2>4. Ablation Study<a name="Ablation Study"></a></h2>
+    <p>
+      In this section, we compare different early stopping
+      mechanism.  The Early Stop approach will remove guidance
+      once the loss is smaller than the threshold. The Early Stop
+      with Check method incorporates periodic checks after early
+      stopping. And <b>the Full Step (our proposed method)</b> is to add guidance for each timestep.
+    </p>
+      <table>
+        <col width="14%">
+        <thead>
+          <tr>
+            <th style="text-align: center"><strong>Labels</strong></th>
+            <th style="text-align: center"><strong>Prompt</strong></th>
+            <th style="text-align: center"><strong>reference Singing</strong></th>
+            <th style="text-align: center"><strong>Early Stop</strong></th>
+            <th style="text-align: center"><strong>Early Stop with Check</strong></th>
+            <th style="text-align: center"><strong>Full Step</strong></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="text-align: center"><p>Female, High Volume, Low Pitch</p></td>
+            <td style="text-align: center"><p>Compose a <b>lass vocalist's</b> song with <b>ringing voice</b> and a <b>low note</b></p></td>
+            <td style="text-align: center"><audio style="width: 180px;" src="audio/ablation-study/female-high-(pitch)low/groundtruth_一千年以后0009.wav" controls="" preload=""></audio></td>
+            <td style="text-align: center"><audio style="width: 180px;" src="audio/ablation-study/female-high-(pitch)low/early_一千年以后0009.wav" controls="" preload=""></audio></td>
+            <td style="text-align: center"><audio style="width: 180px;" src="audio/ablation-study/female-high-(pitch)low/early_check_一千年以后0009.wav" controls="" preload=""></audio></td>
+            <td style="text-align: center"><audio style="width: 180px;" src="audio/ablation-study/female-high-(pitch)low/proposed_check_一千年以后0009.wav" controls="" preload=""></audio></td>
+          </tr>
+          <tr>
+            <td style="text-align: center"><p>Female, Low Volume, High Pitch</p></td>
+            <td style="text-align: center"><p>Can you synthesize a <b>lady singer</b> with a <b>hushed volume</b> and <b>high-pitched pitch</b> song?</p></td>
+            <td style="text-align: center"><audio style="width: 180px;" src="audio/ablation-study/female-low-(pitch)high/groundtruth_童话0021.wav" controls="" preload=""></audio></td>
+            <td style="text-align: center"><audio style="width: 180px;" src="audio/ablation-study/female-low-(pitch)high/early_童话0021.wav" controls="" preload=""></audio></td>
+            <td style="text-align: center"><audio style="width: 180px;" src="audio/ablation-study/female-low-(pitch)high/early_chech_童话0021.wav" controls="" preload=""></audio></td>
+            <td style="text-align: center"><audio style="width: 180px;" src="audio/ablation-study/female-low-(pitch)high/proposed_童话0021.wav" controls="" preload=""></audio></td>
+          </tr>
+          <tr>
+            <td style="text-align: center"><p>Male, High Volume, High Pitch</p></td>
+            <td style="text-align: center"><p>Composing a song with a <b>shrill pitch</b> and a <b>guy singer</b> with a <b>roaring voice</b></p></td>
+            <td style="text-align: center"><audio style="width: 180px;" src="audio/ablation-study/male-high-high/groundtruth-奇妙能力歌0027.wav" controls="" preload=""></audio></td>
+            <td style="text-align: center"><audio style="width: 180px;" src="audio/ablation-study/male-high-high/early-奇妙能力歌0027.wav" controls="" preload=""></audio></td>
+            <td style="text-align: center"><audio style="width: 180px;" src="audio/ablation-study/male-high-high/early-check-奇妙能力歌0027.wav" controls="" preload=""></audio></td>
+            <td style="text-align: center"><audio style="width: 180px;" src="audio/ablation-study/male-high-high/proposed-奇妙能力歌0027.wav" controls="" preload=""></audio></td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+
+      <h2>4. Diversity of Prompts<a name="Changing attributes"></a></h2>
+    <p>
+      The advantage of our method is to utilize powerful comprehension ability of LLM. This makes us can deal with
+      various prompts, <b>without being restricted by templates and keywords.</b> In this section, we provide some samples about that.
+    </p>
+    <p><b>Lyrics</b>: 好吧天亮之后总是潦草离场</p>
+    <table>
+      <col width="25%">
+      <thead>
+        <tr>
+          <th style="text-align: center"><strong>Labels</strong></th>
+          <th style="text-align: center"><strong>Prompt</strong></th>
+          <th style="text-align: center"><strong>Proposed</strong></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="text-align: center"><p>Male, Medium Volume, Low Pitch</p></td>
+          <td style="text-align: center"><p>请用<b>较低</b>的<b>男声</b>唱这首歌，<b>音量中等</b></p></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/diversity-prompt/chinese.wav" controls="" preload=""></audio></td>
+        </tr>
+        <tr>
+          <td style="text-align: center"><p>Male, Medium Volume, <b>Medium High Pitch</b></p></td>
+          <td style="text-align: center"><p>Generate a <b>male voice</b> song with <b>medium high notes</b> and <b>medium volume</b></p></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/diversity-prompt/medium-high-notes-and-medium-volume.wav" controls="" preload=""></audio></td>
+        </tr>
+        <tr>
+          <td style="text-align: center"><p>Male, Medium Volume, <b>Extremely High Pitch</b></p></td>
+          <td style="text-align: center"><p>Generate a <b>male voice</b> song with <b>extremely high notes</b> and <b>medium volume</b></p></td>
+          <td style="text-align: center"><audio style="width: 250px;" src="audio/diversity-prompt/extremely-high-notes-and-medium-volume.wav" controls="" preload=""></audio></td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+
+    <footer class="site-footer">
+    </footer>
+    <p>The page format refers to https://promptstyle.github.io/PromptStyle.</p>
+  </section>
+</body>
+
+
+ 
+      
+
+
+</html>
